@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beranda - MUMU SERVICE</title>
+    <!-- Impor Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Impor Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth; /* Untuk smooth scroll saat navigasi hash */
+        }
+        .page-section {
+            display: none; /* Semua section disembunyikan secara default oleh JS nanti */
+        }
+        .page-section.active {
+            display: block; /* Section aktif akan ditampilkan */
+        }
+        .hero-section {
+            background-image: url('https://placehold.co/1200x600/334155/e2e8f0?text=Selamat+Datang+di+MUMU+SERVICE');
+            background-size: cover;
+            background-position: center;
+        }
+        .service-card {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .product-card {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Page specific headers */
+        .page-header-servis-hp {
+            background-image: url('https://placehold.co/1200x300/1e40af/e0f2fe?text=Servis+HP+Profesional');
+            background-size: cover;
+            background-position: center;
+        }
+        .page-header-jual-beli {
+            background-image: url('https://placehold.co/1200x300/ca8a04/fefce8?text=Jual+Beli+HP+Terbaik');
+            background-size: cover;
+            background-position: center;
+        }
+        .page-header-servis-cctv {
+            background-image: url('https://placehold.co/1200x300/059669/d1fae5?text=Instalasi+&+Servis+CCTV');
+            background-size: cover;
+            background-position: center;
+        }
+        .page-header-tentang {
+            background-image: url('https://placehold.co/1200x300/4f46e5/e0e7ff?text=Tentang+MUMU+SERVICE');
+            background-size: cover;
+            background-position: center;
+        }
+        .page-header-kontak {
+            background-image: url('https://placehold.co/1200x300/06b6d4/cffafe?text=Hubungi+Kami');
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Styling untuk link navigasi aktif */
+        .nav-link.active, .mobile-nav-link.active {
+            background-color: #1f2937; /* bg-gray-900 */
+            color: #ffffff; /* text-white */
+        }
+        /* Default nav link style (Tailwind classes will be applied by JS) */
+        .nav-link-default {
+             /* Dikelola oleh JS untuk penambahan kelas Tailwind */
+        }
+         .mobile-nav-link-default {
+             /* Dikelola oleh JS untuk penambahan kelas Tailwind */
+        }
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border-left-color: #0ea5e9; /* sky-500 */
+            animation: spin 1s ease infinite;
+            display: inline-block; /* agar bisa margin auto jika diperlukan */
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .gemini-response-box {
+            border: 1px solid #e5e7eb; /* gray-200 */
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0.5rem;
+            background-color: #f9fafb; /* gray-50 */
+            white-space: pre-wrap; /* Menjaga format teks dari Gemini */
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <!-- Header / Navbar -->
+    <nav class="bg-gray-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="#beranda" data-target="beranda" class="nav-link-header flex-shrink-0 text-white text-xl font-bold">
+                        MUMU<span class="text-sky-400">SERVICE</span>
+                    </a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#beranda" data-target="beranda" data-title="Beranda" class="nav-link nav-link-default active">Beranda</a>
+                        <a href="#servis-hp" data-target="servis-hp" data-title="Servis HP" class="nav-link nav-link-default">Servis HP</a>
+                        <a href="#jual-beli-hp" data-target="jual-beli-hp" data-title="Jual Beli HP" class="nav-link nav-link-default">Jual Beli HP</a>
+                        <a href="#servis-cctv" data-target="servis-cctv" data-title="Servis CCTV" class="nav-link nav-link-default">Servis CCTV</a>
+                        <a href="#tentang-kami" data-target="tentang-kami" data-title="Tentang Kami" class="nav-link nav-link-default">Tentang Kami</a>
+                        <a href="#kontak" data-target="kontak" data-title="Kontak" class="nav-link nav-link-default">Kontak</a>
+                    </div>
+                </div>
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" id="mobile-menu-open-button" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Buka menu utama</span>
+                        <svg class="block h-6 w-6" id="menu-open-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <svg class="hidden h-6 w-6" id="menu-close-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#beranda" data-target="beranda" data-title="Beranda" class="mobile-nav-link mobile-nav-link-default active">Beranda</a>
+                <a href="#servis-hp" data-target="servis-hp" data-title="Servis HP" class="mobile-nav-link mobile-nav-link-default">Servis HP</a>
+                <a href="#jual-beli-hp" data-target="jual-beli-hp" data-title="Jual Beli HP" class="mobile-nav-link mobile-nav-link-default">Jual Beli HP</a>
+                <a href="#servis-cctv" data-target="servis-cctv" data-title="Servis CCTV" class="mobile-nav-link mobile-nav-link-default">Servis CCTV</a>
+                <a href="#tentang-kami" data-target="tentang-kami" data-title="Tentang Kami" class="mobile-nav-link mobile-nav-link-default">Tentang Kami</a>
+                <a href="#kontak" data-target="kontak" data-title="Kontak" class="mobile-nav-link mobile-nav-link-default">Kontak</a>
+            </div>
+        </div>
+    </nav>
+
+    <main id="page-content-wrapper" class="pt-0"> 
+
+        <!-- Konten Halaman Beranda -->
+        <section id="beranda-content" class="page-section active">
+            <div class="hero-section text-white py-20 md:py-32">
+                <div class="container mx-auto px-6 text-center bg-black bg-opacity-50 p-8 rounded-lg">
+                    <h1 class="text-4xl md:text-6xl font-bold mb-6">Solusi Lengkap Kebutuhan Digital Anda</h1>
+                    <p class="text-lg md:text-2xl mb-8">Servis HP Profesional, Jual Beli HP Terpercaya, dan Instalasi CCTV Handal oleh MUMU SERVICE.</p>
+                    <a href="#kontak" data-target="kontak" data-title="Kontak" class="nav-link-cta bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300">Hubungi Kami Sekarang</a>
+                </div>
+            </div>
+            <div class="py-16 bg-white">
+                <div class="container mx-auto px-6">
+                    <h2 class="text-3xl font-bold text-center mb-12 text-gray-700">Layanan Unggulan Kami</h2>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="service-card bg-gray-50 p-8 rounded-lg shadow-lg text-center">
+                            <img src="https://placehold.co/100x100/38bdf8/ffffff?text=Servis+HP" alt="[Ikon Servis HP]" class="mx-auto mb-6 h-20 w-20 rounded-full" onerror="this.src='https://placehold.co/100x100/cccccc/ffffff?text=Error'">
+                            <h3 class="text-2xl font-semibold mb-4 text-sky-600">Servis HP Profesional</h3>
+                            <p class="text-gray-600 mb-6">Perbaikan cepat dan bergaransi untuk berbagai kerusakan HP Anda. Ditangani oleh teknisi berpengalaman.</p>
+                            <a href="#servis-hp" data-target="servis-hp" data-title="Servis HP" class="nav-link-cta text-sky-500 hover:text-sky-700 font-semibold">Pelajari Lebih Lanjut →</a>
+                        </div>
+                        <div class="service-card bg-gray-50 p-8 rounded-lg shadow-lg text-center">
+                            <img src="https://placehold.co/100x100/fbbf24/ffffff?text=Jual+Beli+HP" alt="[Ikon Jual Beli HP]" class="mx-auto mb-6 h-20 w-20 rounded-full" onerror="this.src='https://placehold.co/100x100/cccccc/ffffff?text=Error'">
+                            <h3 class="text-2xl font-semibold mb-4 text-amber-600">Jual Beli HP Terpercaya</h3>
+                            <p class="text-gray-600 mb-6">Temukan HP baru dan bekas berkualitas dengan harga terbaik. Kami juga menerima jual HP lama Anda.</p>
+                            <a href="#jual-beli-hp" data-target="jual-beli-hp" data-title="Jual Beli HP" class="nav-link-cta text-amber-500 hover:text-amber-700 font-semibold">Lihat Pilihan HP →</a>
+                        </div>
+                        <div class="service-card bg-gray-50 p-8 rounded-lg shadow-lg text-center">
+                            <img src="https://placehold.co/100x100/34d399/ffffff?text=Servis+CCTV" alt="[Ikon Servis CCTV]" class="mx-auto mb-6 h-20 w-20 rounded-full" onerror="this.src='https://placehold.co/100x100/cccccc/ffffff?text=Error'">
+                            <h3 class="text-2xl font-semibold mb-4 text-emerald-600">Instalasi & Servis CCTV</h3>
+                            <p class="text-gray-600 mb-6">Pemasangan dan perbaikan sistem CCTV untuk keamanan rumah dan bisnis Anda. Solusi keamanan terpadu.</p>
+                            <a href="#servis-cctv" data-target="servis-cctv" data-title="Servis CCTV" class="nav-link-cta text-emerald-500 hover:text-emerald-700 font-semibold">Detail Layanan CCTV →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="py-16">
+                <div class="container mx-auto px-6">
+                    <h2 class="text-3xl font-bold text-center mb-12 text-gray-700">Mengapa Memilih MUMU SERVICE?</h2>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <div class="bg-white p-6 rounded-lg shadow text-center">
+                            <img src="https://placehold.co/80x80/a78bfa/ffffff?text=Pro" alt="[Ikon Profesional]" class="mx-auto mb-4 h-16 w-16" onerror="this.src='https://placehold.co/80x80/cccccc/ffffff?text=Error'">
+                            <h4 class="font-semibold text-lg mb-2 text-purple-600">Profesional & Berpengalaman</h4>
+                            <p class="text-sm text-gray-600">Tim kami terdiri dari teknisi ahli yang berpengalaman di bidangnya masing-masing.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow text-center">
+                            <img src="https://placehold.co/80x80/f472b6/ffffff?text=Harga" alt="[Ikon Harga Terbaik]" class="mx-auto mb-4 h-16 w-16" onerror="this.src='https://placehold.co/80x80/cccccc/ffffff?text=Error'">
+                            <h4 class="font-semibold text-lg mb-2 text-pink-600">Harga Kompetitif</h4>
+                            <p class="text-sm text-gray-600">Kami menawarkan harga yang bersaing untuk semua layanan dan produk kami.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow text-center">
+                            <img src="https://placehold.co/80x80/22d3ee/ffffff?text=Garansi" alt="[Ikon Garansi]" class="mx-auto mb-4 h-16 w-16" onerror="this.src='https://placehold.co/80x80/cccccc/ffffff?text=Error'">
+                            <h4 class="font-semibold text-lg mb-2 text-cyan-600">Layanan Bergaransi</h4>
+                            <p class="text-sm text-gray-600">Kepuasan Anda adalah prioritas. Kami memberikan garansi untuk layanan servis.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow text-center">
+                            <img src="https://placehold.co/80x80/60a5fa/ffffff?text=Cepat" alt="[Ikon Pelayanan Cepat]" class="mx-auto mb-4 h-16 w-16" onerror="this.src='https://placehold.co/80x80/cccccc/ffffff?text=Error'">
+                            <h4 class="font-semibold text-lg mb-2 text-blue-600">Pelayanan Cepat & Ramah</h4>
+                            <p class="text-sm text-gray-600">Kami berkomitmen memberikan pelayanan terbaik, cepat, dan ramah kepada setiap pelanggan.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="py-16 bg-sky-50">
+                <div class="container mx-auto px-6">
+                    <h2 class="text-3xl font-bold text-center mb-12 text-gray-700">Apa Kata Pelanggan Kami</h2>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="bg-white p-8 rounded-lg shadow-lg">
+                            <p class="text-gray-600 italic mb-4">"Servis HP di MUMU SERVICE cepat banget, masalah langsung beres. Harganya juga oke. Recommended!"</p>
+                            <p class="font-semibold text-sky-600">- Budi Santoso, Pelanggan Servis HP</p>
+                        </div>
+                        <div class="bg-white p-8 rounded-lg shadow-lg">
+                            <p class="text-gray-600 italic mb-4">"Beli HP second di sini kualitasnya masih bagus, dapat harga miring pula. Penjualnya jujur."</p>
+                            <p class="font-semibold text-amber-600">- Siti Aminah, Pelanggan Jual Beli HP</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Konten Halaman Servis HP -->
+        <section id="servis-hp-content" class="page-section">
+            <header class="page-header-servis-hp py-16 md:py-24 text-white">
+                <div class="container mx-auto px-6 text-center bg-black bg-opacity-50 p-8 rounded-lg">
+                    <h1 class="text-4xl md:text-5xl font-bold">Layanan Servis HP Profesional</h1>
+                    <p class="text-lg md:text-xl mt-4">Solusi cepat dan terpercaya untuk semua masalah HP Anda.</p>
+                </div>
+            </header>
+            
+            <!-- Fitur Diagnosa Awal Gemini API -->
+            <div class="py-16 bg-indigo-50">
+                <div class="container mx-auto px-6">
+                    <h2 class="text-2xl md:text-3xl font-semibold text-center mb-6 text-indigo-700">✨ Diagnosa Awal Kerusakan HP Anda</h2>
+                    <p class="text-center text-gray-600 mb-6 max-w-2xl mx-auto">Jelaskan masalah pada HP Anda di bawah ini, dan biarkan teknologi AI kami memberikan perkiraan diagnosa awal dan saran umum.</p>
+                    <div class="max-w-xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+                        <textarea id="hpProblemDescription" rows="4" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="Contoh: HP saya Samsung A50 tiba-tiba tidak bisa menyala padahal baterai penuh, layar hitam saja."></textarea>
+                        <button id="diagnoseHpButton" class="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition duration-300 flex items-center justify-center">
+                            Dapatkan Diagnosa Awal
+                            <span id="diagnoseHpLoading" class="hidden ml-2 loading-spinner"></span>
+                        </button>
+                        <div id="hpDiagnosisResult" class="gemini-response-box mt-6 hidden"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="py-16 bg-white">
+                <div class="container mx-auto px-6">
+                    <h2 class="text-2xl md:text-3xl font-semibold text-center mb-10 text-gray-700">Jenis Kerusakan yang Kami Tangani</h2>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div class="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                            <img src="https://placehold.co/80x80/ef4444/ffffff?text=Layar+Pecah" alt="[Ikon Layar Pecah]" class="mx-auto mb-4 h-16 w-16 rounded-full" onerror="this.src='https://placehold.co/80x80/cccccc/ffffff?text=Error'">
+                            <h3 class="text-xl font-semibold mb-2 text-red-600">Layar Pecah / LCD Rusak</h3>
+                            <p class="text-gray-600">Penggantian layar LCD dan touchscreen untuk berbagai merek HP.</p>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                            <img src="https://placehold.co/80x80/f97316/ffffff?text=Baterai" alt="[Ikon Baterai]" class="mx-auto mb-4 h-16 w-16 rounded-full" onerror="this.src='https://placehold.co/80x80/cccccc/ffffff?text=Error'">
+                            <h3 class="text-xl font-semibold mb-2 text-orange-600">Masalah Baterai</h3>
+                            <p class="text-gray-600">Penggantian baterai boros, kembung, atau tidak bisa di-charge.</p>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                            <img src="https://placehold.co/80x80/10b981/ffffff?text=Software" alt="[Ikon Software]" class="mx-auto mb-4 h-16 w-16 rounded-full" onerror="this.src='https://placehold.co/80x80/cccccc/ffffff?text=Error'">
+                            <h3 class="text-xl font-semibold mb-2 text-emerald-600">Kerusakan Software</h3>
+                            <p class="text-gray-600">Bootloop, hang logo, lupa pola/password, flashing ROM.</p>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                            <img src="https://placehold.co/80x80/6366f1/ffffff?text=Mati+Total" alt="[Ikon Mati Total]" class="mx-auto mb-4 h-16 w-16 rounded-full" onerror="this.src='https://placehold.co/80x80/cccccc/ffffff?text=Error'">
+                            <h3 class="text-xl font-semibold mb-2 text-indigo-600">Mati Total (Matot)</h3>
+                            <p class="text-gray-600">Analisa dan perbaikan HP yang mati total akibat kerusakan hardware.</p>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                            <img src="https://placehold.co/80x80/8b5cf6/ffffff?text=Speaker" alt="[Ikon Speaker Rusak]" class="mx-auto mb-4 h-16 w-16 rounded-full" onerror="this.src='https://placehold.co/80x80/cccccc/ffffff?text=Error'">
+                            <h3 class="text-xl font-semibold mb-2 text-violet-600">Speaker / Mic Rusak</h3>
+                            <p class="text-gray-600">Perbaikan atau penggantian komponen audio yang bermasalah.</p>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                            <img src="https://placehold.co/80x80/ec4899/ffffff?text=Kamera" alt="[Ikon Kamera Rusak]" class="mx-auto mb-4 h-16 w-16 rounded-full" onerror="this.src='https://placehold.co/80x80/cccccc/ffffff?text=Error'">
+                            <h3 class="text-xl font-semibold mb-2 text-pink-600">Kamera Bermasalah</h3>
+                            <p class="text-gray-600">Perbaikan kamera depan/belakang yang buram, error, atau tidak berfungsi.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="py-16">
+                <div class="container mx-auto px-6">
+                    <h2 class="text-2xl md:text-3xl font-semibold text-center mb-10 text-gray-700">Merek HP yang Kami Layani</h2>
+                    <div class="flex flex-wrap justify-center items-center gap-8">
+                        <span class="bg-white p-4 rounded-lg shadow text-gray-700 font-medium">Apple iPhone</span>
+                        <span class="bg-white p-4 rounded-lg shadow text-gray-700 font-medium">Samsung</span>
+                        <span class="bg-white p-4 rounded-lg shadow text-gray-700 font-medium">Xiaomi</span>
+                        <span class="bg-white p-4 rounded-lg shadow text-gray-700 font-medium">Oppo</span>
+                        <span class="bg-white p-4 rounded-lg shadow text-gray-700 font-medium">Vivo</span>
+                        <span class="bg-white p-4 rounded-lg shadow text-gray-700 font-medium">Realme</span>
+                        <span class="bg-white p-4 rounded-lg shadow text-gray-700 font-medium">Asus</span>
+                        <span class="bg-white p-4 rounded-lg shadow text-gray-700 font-medium">Infinix</span>
+                        <span class="bg-white p-4 rounded-lg shadow text-gray-700 font-medium">& Merek Lainnya</span>
+                    </div>
+                </div>
+            </div>
+            <div class="py-16 bg-sky-50">
+                <div class="container mx-auto px-6 text-center">
+                    <h2 class="text-2xl md:text-3xl font-semibold mb-6 text-gray-700">Proses Servis Kami</h2>
+                    <div class="grid md:grid-cols-3 gap-8 text-left">
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <h3 class="text-xl font-semibold mb-3 text-sky-600">1. Konsultasi & Diagnosa</h3>
+                            <p class="text-gray-600">Bawa HP Anda atau hubungi kami. Teknisi akan melakukan diagnosa awal kerusakan.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <h3 class="text-xl font-semibold mb-3 text-sky-600">2. Estimasi Biaya & Waktu</h3>
+                            <p class="text-gray-600">Kami akan memberikan estimasi biaya perbaikan dan waktu pengerjaan setelah diagnosa.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <h3 class="text-xl font-semibold mb-3 text-sky-600">3. Perbaikan & Garansi</h3>
+                            <p class="text-gray-600">Setelah persetujuan, HP Anda akan diperbaiki. Kami memberikan garansi untuk layanan servis.</p>
+                        </div>
+                    </div>
+                    <a href="#kontak" data-target="kontak" data-title="Kontak" class="nav-link-cta mt-10 inline-block bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300">Konsultasikan Masalah HP Anda</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Konten Halaman Jual Beli HP -->
+        <section id="jual-beli-hp-content" class="page-section">
+            <header class="page-header-jual-beli py-16 md:py-24 text-white">
+                <div class="container mx-auto px-6 text-center bg-black bg-opacity-50 p-8 rounded-lg">
+                    <h1 class="text-4xl md:text-5xl font-bold">Jual Beli HP Baru & Bekas</h1>
+                    <p class="text-lg md:text-xl mt-4">Temukan HP impian Anda atau jual HP lama Anda dengan harga terbaik.</p>
+                </div>
+            </header>
+            <div class="py-16 bg-white">
+                <div class="container mx-auto px-6">
+                    <h2 class="text-2xl md:text-3xl font-semibold text-center mb-10 text-gray-700">Beli Handphone Pilihan Anda</h2>
+                    <div class="mb-8 flex flex-wrap gap-4 justify-center">
+                        <select class="p-2 border rounded-md shadow-sm">
+                            <option>Semua Merek</option>
+                            <option>Apple</option>
+                            <option>Samsung</option>
+                            <option>Xiaomi</option>
+                            <option>Oppo</option>
+                        </select>
+                        <select class="p-2 border rounded-md shadow-sm">
+                            <option>Semua Kondisi</option>
+                            <option>Baru</option>
+                            <option>Bekas</option>
+                        </select>
+                        <input type="text" placeholder="Cari HP..." class="p-2 border rounded-md shadow-sm">
+                        <button class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-md">Cari</button>
+                    </div>
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                        <div class="product-card bg-gray-50 rounded-lg shadow-lg overflow-hidden">
+                            <img src="https://placehold.co/300x200/f59e0b/ffffff?text=HP+Model+X" alt="[Gambar HP Model X]" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/300x200/cccccc/ffffff?text=Error'">
+                            <div class="p-6">
+                                <h3 class="text-xl font-semibold mb-2 text-amber-700">HP Model X (Baru)</h3>
+                                <p class="text-gray-600 mb-1 text-sm">RAM 8GB, Penyimpanan 128GB</p>
+                                <p class="text-lg font-bold text-amber-600 mb-4">Rp 5.000.000</p>
+                                <button class="w-full bg-amber-500 hover:bg-amber-600 text-white py-2 px-4 rounded-md transition duration-300">Lihat Detail</button>
+                            </div>
+                        </div>
+                        <div class="product-card bg-gray-50 rounded-lg shadow-lg overflow-hidden">
+                            <img src="https://placehold.co/300x200/f59e0b/ffffff?text=HP+Model+Y" alt="[Gambar HP Model Y]" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/300x200/cccccc/ffffff?text=Error'">
+                            <div class="p-6">
+                                <h3 class="text-xl font-semibold mb-2 text-amber-700">HP Model Y (Bekas)</h3>
+                                <p class="text-gray-600 mb-1 text-sm">RAM 6GB, Penyimpanan 64GB, Kondisi 90%</p>
+                                <p class="text-lg font-bold text-amber-600 mb-4">Rp 2.500.000</p>
+                                <button class="w-full bg-amber-500 hover:bg-amber-600 text-white py-2 px-4 rounded-md transition duration-300">Lihat Detail</button>
+                            </div>
+                        </div>
+                         <div class="product-card bg-gray-50 rounded-lg shadow-lg overflow-hidden">
+                            <img src="https://placehold.co/300x200/f59e0b/ffffff?text=HP+Model+Z" alt="[Gambar HP Model Z]" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/300x200/cccccc/ffffff?text=Error'">
+                            <div class="p-6">
+                                <h3 class="text-xl font-semibold mb-2 text-amber-700">HP Model Z (Baru)</h3>
+                                <p class="text-gray-600 mb-1 text-sm">RAM 12GB, Penyimpanan 256GB, Kamera Pro</p>
+                                <p class="text-lg font-bold text-amber-600 mb-4">Rp 10.000.000</p>
+                                <button class="w-full bg-amber-500 hover:bg-amber-600 text-white py-2 px-4 rounded-md transition duration-300">Lihat Detail</button>
+                            </div>
+                        </div>
+                         <div class="product-card bg-gray-50 rounded-lg shadow-lg overflow-hidden">
+                            <img src="https://placehold.co/300x200/f59e0b/ffffff?text=HP+Model+A" alt="[Gambar HP Model A]" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/300x200/cccccc/ffffff?text=Error'">
+                            <div class="p-6">
+                                <h3 class="text-xl font-semibold mb-2 text-amber-700">HP Model A (Bekas)</h3>
+                                <p class="text-gray-600 mb-1 text-sm">RAM 4GB, Penyimpanan 128GB, Mulus</p>
+                                <p class="text-lg font-bold text-amber-600 mb-4">Rp 1.800.000</p>
+                                <button class="w-full bg-amber-500 hover:bg-amber-600 text-white py-2 px-4 rounded-md transition duration-300">Lihat Detail</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="py-16">
+                <div class="container mx-auto px-6">
+                    <div class="bg-white p-8 md:p-12 rounded-lg shadow-xl">
+                        <h2 class="text-2xl md:text-3xl font-semibold text-center mb-8 text-gray-700">Punya HP Bekas? Jual di Sini!</h2>
+                        <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Kami menerima HP bekas Anda dengan harga pantas. Proses cepat dan mudah. Isi formulir di bawah ini untuk mendapatkan penawaran.</p>
+                        <form id="jualHpForm" class="max-w-xl mx-auto">
+                            <div class="mb-4">
+                                <label for="nama-penjual" class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap Anda</label>
+                                <input type="text" id="nama-penjual" name="nama-penjual" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500" placeholder="Contoh: Budi Santoso">
+                            </div>
+                            <div class="mb-4">
+                                <label for="merek-hp-jual" class="block text-sm font-medium text-gray-700 mb-1">Merek & Model HP</label>
+                                <input type="text" id="merek-hp-jual" name="merek-hp-jual" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500" placeholder="Contoh: Samsung Galaxy S20">
+                            </div>
+                            <div class="mb-4">
+                                <label for="kondisi-hp-jual" class="block text-sm font-medium text-gray-700 mb-1">Deskripsi Kondisi HP</label>
+                                <textarea id="kondisi-hp-jual" name="kondisi-hp-jual" rows="3" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500" placeholder="Jelaskan kondisi fisik (misal: mulus, ada lecet), fungsi (normal, ada minus), dan kelengkapan (kotak, charger, dll.)"></textarea>
+                            </div>
+                            <!-- Tombol Generate Deskripsi Gemini API -->
+                            <div class="mb-4">
+                                <button type="button" id="generateHpDescriptionButton" class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-md text-base transition duration-300 flex items-center justify-center">
+                                    ✨ Buat Deskripsi Otomatis dengan AI
+                                    <span id="generateHpDescriptionLoading" class="hidden ml-2 loading-spinner"></span>
+                                </button>
+                            </div>
+                            <div class="mb-4">
+                                <label for="deskripsi-jual-generated" class="block text-sm font-medium text-gray-700 mb-1">Deskripsi Penjualan (Edit jika perlu)</label>
+                                <textarea id="deskripsi-jual-generated" name="deskripsi-jual-generated" rows="5" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500" placeholder="Deskripsi penjualan akan muncul di sini setelah dibuat oleh AI..."></textarea>
+                                <div id="generateHpDescriptionError" class="text-red-500 text-sm mt-1 hidden"></div>
+                            </div>
+                             <div class="mb-4">
+                                <label for="foto-hp-jual" class="block text-sm font-medium text-gray-700 mb-1">Upload Foto HP (Opsional)</label>
+                                <input type="file" id="foto-hp-jual" name="foto-hp-jual" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100">
+                            </div>
+                            <div class="mb-6">
+                                <label for="no-wa-jual" class="block text-sm font-medium text-gray-700 mb-1">Nomor WhatsApp Aktif</label>
+                                <input type="tel" id="no-wa-jual" name="no-wa-jual" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500" placeholder="Contoh: 081234567890">
+                            </div>
+                            <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-6 rounded-lg text-lg transition duration-300">Ajukan Penawaran</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Konten Halaman Servis CCTV -->
+        <section id="servis-cctv-content" class="page-section">
+            <header class="page-header-servis-cctv py-16 md:py-24 text-white">
+                <div class="container mx-auto px-6 text-center bg-black bg-opacity-50 p-8 rounded-lg">
+                    <h1 class="text-4xl md:text-5xl font-bold">Instalasi & Servis CCTV Profesional</h1>
+                    <p class="text-lg md:text-xl mt-4">Solusi keamanan terpercaya untuk rumah, kantor, dan bisnis Anda.</p>
+                </div>
+            </header>
+            <div class="py-16 bg-white">
+                <div class="container mx-auto px-6">
+                    <h2 class="text-2xl md:text-3xl font-semibold text-center mb-10 text-gray-700">Layanan CCTV Kami</h2>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div class="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                            <img src="https://placehold.co/80x80/10b981/ffffff?text=Instalasi" alt="[Ikon Instalasi CCTV]" class="mx-auto mb-4 h-16 w-16 rounded-full" onerror="this.src='https://placehold.co/80x80/cccccc/ffffff?text=Error'">
+                            <h3 class="text-xl font-semibold mb-2 text-emerald-600">Instalasi CCTV Baru</h3>
+                            <p class="text-gray-600">Pemasangan sistem CCTV baru untuk berbagai kebutuhan, dari rumah tinggal hingga area komersial.</p>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                            <img src="https://placehold.co/80x80/3b82f6/ffffff?text=Perbaikan" alt="[Ikon Perbaikan CCTV]" class="mx-auto mb-4 h-16 w-16 rounded-full" onerror="this.src='https://placehold.co/80x80/cccccc/ffffff?text=Error'">
+                            <h3 class="text-xl font-semibold mb-2 text-blue-600">Perbaikan & Maintenance</h3>
+                            <p class="text-gray-600">Servis CCTV rusak, gambar buram, DVR bermasalah, dan perawatan rutin sistem CCTV.</p>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                            <img src="https://placehold.co/80x80/a855f7/ffffff?text=Upgrade" alt="[Ikon Upgrade CCTV]" class="mx-auto mb-4 h-16 w-16 rounded-full" onerror="this.src='https://placehold.co/80x80/cccccc/ffffff?text=Error'">
+                            <h3 class="text-xl font-semibold mb-2 text-purple-600">Upgrade Sistem CCTV</h3>
+                            <p class="text-gray-600">Tingkatkan sistem CCTV lama Anda dengan teknologi terbaru untuk kualitas gambar dan fitur yang lebih baik.</p>
+                        </div>
+                         <div class="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                            <img src="https://placehold.co/80x80/f59e0b/ffffff?text=Konsultasi" alt="[Ikon Konsultasi CCTV]" class="mx-auto mb-4 h-16 w-16 rounded-full" onerror="this.src='https://placehold.co/80x80/cccccc/ffffff?text=Error'">
+                            <h3 class="text-xl font-semibold mb-2 text-amber-600">Konsultasi Keamanan</h3>
+                            <p class="text-gray-600">Kami membantu Anda merencanakan sistem keamanan CCTV yang paling sesuai dengan kebutuhan dan anggaran.</p>
+                        </div>
+                         <div class="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                            <img src="https://placehold.co/80x80/ef4444/ffffff?text=Setting+Online" alt="[Ikon Setting Online CCTV]" class="mx-auto mb-4 h-16 w-16 rounded-full" onerror="this.src='https://placehold.co/80x80/cccccc/ffffff?text=Error'">
+                            <h3 class="text-xl font-semibold mb-2 text-red-600">Setting Online CCTV</h3>
+                            <p class="text-gray-600">Konfigurasi CCTV agar dapat dipantau secara online melalui smartphone atau perangkat lainnya.</p>
+                        </div>
+                         <div class="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                            <img src="https://placehold.co/80x80/22c55e/ffffff?text=Paket+CCTV" alt="[Ikon Paket CCTV]" class="mx-auto mb-4 h-16 w-16 rounded-full" onerror="this.src='https://placehold.co/80x80/cccccc/ffffff?text=Error'">
+                            <h3 class="text-xl font-semibold mb-2 text-green-600">Paket CCTV Lengkap</h3>
+                            <p class="text-gray-600">Menyediakan berbagai paket CCTV lengkap dengan pemasangan untuk berbagai skala kebutuhan.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="py-16">
+                <div class="container mx-auto px-6">
+                    <h2 class="text-2xl md:text-3xl font-semibold text-center mb-10 text-gray-700">Area Layanan Kami</h2>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <img src="https://placehold.co/80x80/60a5fa/ffffff?text=Rumah" alt="[Ikon Rumah]" class="mx-auto mb-3 h-12 w-12" onerror="this.src='https://placehold.co/80x80/cccccc/ffffff?text=Error'">
+                            <h4 class="font-semibold text-lg text-blue-600">Rumah Tinggal</h4>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <img src="https://placehold.co/80x80/fbbf24/ffffff?text=Kantor" alt="[Ikon Kantor]" class="mx-auto mb-3 h-12 w-12" onerror="this.src='https://placehold.co/80x80/cccccc/ffffff?text=Error'">
+                            <h4 class="font-semibold text-lg text-amber-600">Kantor & Perusahaan</h4>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <img src="https://placehold.co/80x80/f87171/ffffff?text=Toko" alt="[Ikon Toko]" class="mx-auto mb-3 h-12 w-12" onerror="this.src='https://placehold.co/80x80/cccccc/ffffff?text=Error'">
+                            <h4 class="font-semibold text-lg text-red-500">Toko & Ritel</h4>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <img src="https://placehold.co/80x80/a78bfa/ffffff?text=Gudang" alt="[Ikon Gudang]" class="mx-auto mb-3 h-12 w-12" onerror="this.src='https://placehold.co/80x80/cccccc/ffffff?text=Error'">
+                            <h4 class="font-semibold text-lg text-purple-500">Gudang & Pabrik</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="py-16 bg-emerald-50">
+                <div class="container mx-auto px-6 text-center">
+                    <h2 class="text-2xl md:text-3xl font-semibold mb-6 text-gray-700">Mengapa Memilih Layanan CCTV Kami?</h2>
+                    <ul class="list-disc list-inside text-left max-w-2xl mx-auto space-y-3 text-gray-600 mb-8">
+                        <li>Teknisi berpengalaman dan profesional di bidang CCTV.</li>
+                        <li>Menggunakan produk CCTV berkualitas dari merek terpercaya.</li>
+                        <li>Instalasi rapi dan sesuai standar keamanan.</li>
+                        <li>Garansi pemasangan dan produk (syarat & ketentuan berlaku).</li>
+                        <li>Harga kompetitif dan transparan.</li>
+                        <li>Layanan purna jual yang responsif.</li>
+                    </ul>
+                    <a href="#kontak" data-target="kontak" data-title="Kontak" class="nav-link-cta mt-6 inline-block bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300">Minta Penawaran CCTV</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Konten Halaman Tentang Kami -->
+        <section id="tentang-kami-content" class="page-section">
+            <header class="page-header-tentang py-16 md:py-24 text-white">
+                <div class="container mx-auto px-6 text-center bg-black bg-opacity-50 p-8 rounded-lg">
+                    <h1 class="text-4xl md:text-5xl font-bold">Tentang MUMU SERVICE</h1>
+                    <p class="text-lg md:text-xl mt-4">Mengenal lebih dekat penyedia solusi digital Anda.</p>
+                </div>
+            </header>
+            <div class="py-16 bg-white">
+                <div class="container mx-auto px-6">
+                    <div class="max-w-3xl mx-auto">
+                        <h2 class="text-2xl md:text-3xl font-semibold mb-6 text-gray-700">Siapa Kami?</h2>
+                        <p class="text-gray-600 mb-4 leading-relaxed">
+                            MUMU SERVICE adalah penyedia jasa terpadu yang berfokus pada kebutuhan teknologi sehari-hari Anda. Berdiri sejak tahun XXXX (ganti dengan tahun berdiri Anda), kami berkomitmen untuk memberikan solusi terbaik dalam bidang servis handphone, jual beli handphone berkualitas, serta instalasi dan perawatan sistem CCTV.
+                        </p>
+                        <p class="text-gray-600 mb-8 leading-relaxed">
+                            Dengan tim teknisi yang profesional dan berpengalaman, kami selalu berusaha memberikan pelayanan yang cepat, handal, dan memuaskan bagi setiap pelanggan. Kami percaya bahwa teknologi harus mempermudah hidup, dan kami hadir untuk memastikan perangkat serta sistem keamanan Anda berfungsi optimal.
+                        </p>
+
+                        <h2 class="text-2xl md:text-3xl font-semibold mb-6 text-gray-700">Visi Kami</h2>
+                        <p class="text-gray-600 mb-8 leading-relaxed">
+                            Menjadi pilihan utama masyarakat dalam solusi servis HP, jual beli HP, dan layanan CCTV yang terpercaya, inovatif, dan mengedepankan kepuasan pelanggan.
+                        </p>
+
+                        <h2 class="text-2xl md:text-3xl font-semibold mb-6 text-gray-700">Misi Kami</h2>
+                        <ul class="list-disc list-inside text-gray-600 space-y-2 mb-8 leading-relaxed">
+                            <li>Menyediakan layanan servis HP yang profesional dengan diagnosa akurat dan perbaikan berkualitas.</li>
+                            <li>Menawarkan pilihan HP baru dan bekas yang terjamin kualitasnya dengan harga kompetitif.</li>
+                            <li>Memberikan solusi keamanan CCTV yang efektif dan sesuai dengan kebutuhan pelanggan.</li>
+                            <li>Terus meningkatkan kualitas layanan melalui pelatihan tim dan penggunaan teknologi terkini.</li>
+                            <li>Membangun hubungan jangka panjang dengan pelanggan berdasarkan kepercayaan dan kepuasan.</li>
+                        </ul>
+
+                        <h2 class="text-2xl md:text-3xl font-semibold mb-10 text-gray-700 text-center">Tim Kami (Contoh)</h2>
+                        <div class="grid sm:grid-cols-2 gap-8">
+                            <div class="bg-gray-50 p-6 rounded-lg shadow text-center">
+                                <img src="https://placehold.co/120x120/cbd5e1/475569?text=Mumu" alt="[Foto Mumu]" class="w-24 h-24 rounded-full mx-auto mb-4" onerror="this.src='https://placehold.co/120x120/cccccc/ffffff?text=Error'">
+                                <h4 class="text-xl font-semibold text-gray-800">Mumu</h4>
+                                <p class="text-indigo-600">Owner & Teknisi Ahli</p>
+                            </div>
+                            <div class="bg-gray-50 p-6 rounded-lg shadow text-center">
+                                <img src="https://placehold.co/120x120/cbd5e1/475569?text=Tim+Ahli" alt="[Foto Anggota Tim 2]" class="w-24 h-24 rounded-full mx-auto mb-4" onerror="this.src='https://placehold.co/120x120/cccccc/ffffff?text=Error'">
+                                <h4 class="text-xl font-semibold text-gray-800">Nama Anggota Tim 2</h4>
+                                <p class="text-indigo-600">Spesialis CCTV & Jaringan</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Konten Halaman Kontak -->
+        <section id="kontak-content" class="page-section">
+            <header class="page-header-kontak py-16 md:py-24 text-white">
+                <div class="container mx-auto px-6 text-center bg-black bg-opacity-50 p-8 rounded-lg">
+                    <h1 class="text-4xl md:text-5xl font-bold">Hubungi Kami</h1>
+                    <p class="text-lg md:text-xl mt-4">Kami siap membantu Anda. Jangan ragu untuk menghubungi MUMU SERVICE.</p>
+                </div>
+            </header>
+            <div class="py-16 bg-white">
+                <div class="container mx-auto px-6">
+                    <div class="grid md:grid-cols-2 gap-12">
+                        <div>
+                            <h2 class="text-2xl md:text-3xl font-semibold mb-6 text-gray-700">Informasi Kontak MUMU SERVICE</h2>
+                            <div class="space-y-6 text-gray-600">
+                                <div class="flex items-start">
+                                    <svg class="w-6 h-6 text-cyan-600 mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                    <div>
+                                        <h4 class="font-semibold text-lg">Alamat Toko/Kantor:</h4>
+                                        <p>Jl. Contoh Alamat No. 123, Kelurahan ABC, Kecamatan XYZ, Kota Anda, Kode Pos 12345 (Ganti dengan alamat Anda)</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <svg class="w-6 h-6 text-cyan-600 mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.308 1.154a11.034 11.034 0 005.372 5.372l1.154-2.308a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                    <div>
+                                        <h4 class="font-semibold text-lg">Telepon:</h4>
+                                        <p>+62 857-0501-4175</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <svg class="w-6 h-6 text-cyan-600 mr-3 mt-1 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                                    </svg>
+                                    <div>
+                                        <h4 class="font-semibold text-lg">WhatsApp:</h4>
+                                        <p><a href="https://wa.me/6285705014175" target="_blank" class="text-cyan-600 hover:text-cyan-700 hover:underline">+62 857-0501-4175</a> (Klik untuk chat)</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <svg class="w-6 h-6 text-cyan-600 mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                    <div>
+                                        <h4 class="font-semibold text-lg">Email:</h4>
+                                        <p><a href="mailto:mumu.service@example.com" class="text-cyan-600 hover:text-cyan-700 hover:underline">mumu.service@example.com</a> (Ganti dengan email Anda)</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <svg class="w-6 h-6 text-cyan-600 mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    <div>
+                                        <h4 class="font-semibold text-lg">Jam Operasional:</h4>
+                                        <p>Senin - Sabtu: 09.00 - 18.00 WIB</p>
+                                        <p>Minggu & Hari Libur: Tutup (atau sesuai perjanjian)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl md:text-3xl font-semibold mb-6 text-gray-700">Kirim Pesan kepada Kami</h2>
+                            <form id="kontakForm" action="#" method="POST" class="space-y-6 bg-gray-50 p-8 rounded-lg shadow-lg">
+                                <div>
+                                    <label for="name" class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
+                                    <input type="text" name="name" id="name" autocomplete="name" required class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500">
+                                </div>
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-gray-700">Alamat Email</label>
+                                    <input type="email" name="email" id="email" autocomplete="email" required class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500">
+                                </div>
+                                <div>
+                                    <label for="phone" class="block text-sm font-medium text-gray-700">Nomor Telepon (Opsional)</label>
+                                    <input type="tel" name="phone" id="phone" autocomplete="tel" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500">
+                                </div>
+                                <div>
+                                    <label for="subject" class="block text-sm font-medium text-gray-700">Subjek</label>
+                                    <input type="text" name="subject" id="subject" required class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500">
+                                </div>
+                                <div>
+                                    <label for="message" class="block text-sm font-medium text-gray-700">Pesan Anda</label>
+                                    <textarea id="message" name="message" rows="4" required class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500"></textarea>
+                                </div>
+                                <div>
+                                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 transition duration-300">
+                                        Kirim Pesan
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="py-16">
+                <div class="container mx-auto px-6">
+                    <h2 class="text-2xl md:text-3xl font-semibold text-center mb-8 text-gray-700">Temukan Lokasi Kami</h2>
+                    <div class="aspect-w-16 aspect-h-9 rounded-lg shadow-xl overflow-hidden">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.570100957815!2d106.82715201534883!3d-6.188200995519527!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f42317533607%3A0x4e6c0ba4c3e1591d!2sNational%20Monument%20(Monas)!5e0!3m2!1sen!2sid!4v1616555000000!5m2!1sen!2sid" 
+                        width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Peta Lokasi Contoh (Monas)"></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-300 py-12">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <h5 class="text-xl font-bold mb-4 text-white">MUMU<span class="text-sky-400">SERVICE</span></h5>
+                    <p class="text-sm mb-4">Solusi terpadu untuk servis HP, jual beli HP, dan instalasi CCTV. Kami siap melayani Anda dengan profesional.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" aria-label="Facebook MUMU SERVICE" class="text-gray-400 hover:text-white"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd" /></svg></a>
+                        <a href="#" aria-label="Twitter MUMU SERVICE" class="text-gray-400 hover:text-white"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" /></svg></a>
+                        <a href="#" aria-label="Instagram MUMU SERVICE" class="text-gray-400 hover:text-white"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm3.282 14.156c-.38 .205-1.034.39-1.94.39-1.538 0-2.8-.973-2.8-2.545v-3.142h1.542v3.142c0 .65.42 1.023 1.071 1.023.634 0 1.07-.365 1.07-.988V9.333h1.541v3.282c0 1.642-.993 2.695-2.726 2.54zm-7.325-4.823H6.415v4.823H4.874V9.333h1.542v3.282c0 .813.044 1.66.087 2.545h.043c.17-.88.226-1.706.226-2.545V9.333h1.541v4.823z" clip-rule="evenodd" /></svg></a>
+                    </div>
+                </div>
+                <div>
+                    <h5 class="text-lg font-semibold mb-4 text-white">Link Cepat</h5>
+                    <ul class="space-y-2">
+                        <li><a href="#beranda" data-target="beranda" data-title="Beranda" class="nav-link-footer hover:text-sky-400">Beranda</a></li>
+                        <li><a href="#servis-hp" data-target="servis-hp" data-title="Servis HP" class="nav-link-footer hover:text-sky-400">Servis HP</a></li>
+                        <li><a href="#jual-beli-hp" data-target="jual-beli-hp" data-title="Jual Beli HP" class="nav-link-footer hover:text-sky-400">Jual Beli HP</a></li>
+                        <li><a href="#servis-cctv" data-target="servis-cctv" data-title="Servis CCTV" class="nav-link-footer hover:text-sky-400">Servis CCTV</a></li>
+                        <li><a href="#tentang-kami" data-target="tentang-kami" data-title="Tentang Kami" class="nav-link-footer hover:text-sky-400">Tentang Kami</a></li>
+                        <li><a href="#kontak" data-target="kontak" data-title="Kontak" class="nav-link-footer hover:text-sky-400">Kontak</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="text-lg font-semibold mb-4 text-white">Hubungi Kami</h5>
+                    <p class="mb-2">Jl. Contoh Alamat No. 123, Kota Anda (Ganti)</p>
+                    <p class="mb-2">Email: mumu.service@example.com (Ganti)</p>
+                    <p class="mb-2">Telepon: +62 857-0501-4175</p>
+                    <p>WhatsApp: <a href="https://wa.me/6285705014175" target="_blank" class="hover:text-sky-400">+62 857-0501-4175</a></p>
+                </div>
+            </div>
+            <div class="mt-8 border-t border-gray-700 pt-8 text-center text-sm">
+                <p>© <span id="currentYear"></span> MUMU SERVICE. Semua Hak Dilindungi.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileMenuButton = document.getElementById('mobile-menu-open-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const openIcon = document.getElementById('menu-open-icon');
+            const closeIcon = document.getElementById('menu-close-icon');
+
+            const pageContentWrapper = document.getElementById('page-content-wrapper');
+            const pageSections = pageContentWrapper.querySelectorAll('.page-section');
+            
+            const navLinks = document.querySelectorAll('nav .hidden.md\\:block a.nav-link');
+            const mobileNavLinks = document.querySelectorAll('#mobile-menu a.mobile-nav-link');
+            const allNavLinkElements = Array.from(navLinks).concat(Array.from(mobileNavLinks)).concat(Array.from(document.querySelectorAll('.nav-link-cta, .nav-link-footer, .nav-link-header')));
+
+            // Kelas default untuk link navigasi
+            const navLinkDefaultClasses = ['px-3', 'py-2', 'rounded-md', 'text-sm', 'font-medium', 'text-gray-300', 'hover:bg-gray-700', 'hover:text-white'];
+            const mobileNavLinkDefaultClasses = ['block', 'px-3', 'py-2', 'rounded-md', 'text-base', 'font-medium', 'text-gray-300', 'hover:bg-gray-700', 'hover:text-white'];
+            const navLinkActiveClasses = ['bg-gray-900', 'text-white'];
+
+
+            function applyDefaultStyles(link, isMobile) {
+                const defaultClasses = isMobile ? mobileNavLinkDefaultClasses : navLinkDefaultClasses;
+                link.classList.remove(...navLinkActiveClasses);
+                link.classList.add(...defaultClasses);
+            }
+
+            function applyActiveStyles(link) {
+                const isMobile = link.classList.contains('mobile-nav-link');
+                const defaultClasses = isMobile ? mobileNavLinkDefaultClasses : navLinkDefaultClasses;
+                link.classList.remove(...defaultClasses.filter(cls => !navLinkActiveClasses.includes(cls) && !cls.startsWith('hover:')));
+                link.classList.add(...navLinkActiveClasses);
+            }
+
+            function showPage(targetId, targetTitle) {
+                pageSections.forEach(section => {
+                    section.classList.remove('active');
+                    section.classList.add('hidden'); 
+                });
+                const activeSection = document.getElementById(targetId + '-content');
+                if (activeSection) {
+                    activeSection.classList.add('active');
+                    activeSection.classList.remove('hidden');
+                    document.title = targetTitle + " - MUMU SERVICE";
+                     window.scrollTo(0, 0); 
+                }
+                updateActiveNavLinks(targetId);
+            }
+            
+            function updateActiveNavLinks(activeTargetId) {
+                navLinks.forEach(link => {
+                    applyDefaultStyles(link, false);
+                    if (link.dataset.target === activeTargetId) {
+                        applyActiveStyles(link);
+                    }
+                });
+                mobileNavLinks.forEach(link => {
+                    applyDefaultStyles(link, true);
+                    if (link.dataset.target === activeTargetId) {
+                        applyActiveStyles(link);
+                    }
+                });
+            }
+
+            allNavLinkElements.forEach(link => {
+                // Terapkan kelas default Tailwind saat pertama kali dimuat
+                if (link.classList.contains('nav-link-default')) {
+                    navLinkDefaultClasses.forEach(cls => link.classList.add(cls));
+                }
+                if (link.classList.contains('mobile-nav-link-default')) {
+                    mobileNavLinkDefaultClasses.forEach(cls => link.classList.add(cls));
+                }
+
+                link.addEventListener('click', (event) => {
+                    const targetId = link.dataset.target;
+                    const targetTitle = link.dataset.title || link.textContent.trim(); 
+
+                    if (targetId) { 
+                        event.preventDefault(); 
+                        showPage(targetId, targetTitle);
+                        window.location.hash = targetId;
+
+                        if (mobileMenu && !mobileMenu.classList.contains('hidden') && link.classList.contains('mobile-nav-link')) {
+                            mobileMenu.classList.add('hidden');
+                            mobileMenuButton.setAttribute('aria-expanded', 'false');
+                            openIcon.classList.remove('hidden');
+                            closeIcon.classList.add('hidden');
+                        }
+                    }
+                });
+            });
+            
+            if (mobileMenuButton && mobileMenu && openIcon && closeIcon) {
+                mobileMenuButton.addEventListener('click', () => {
+                    const expanded = mobileMenuButton.getAttribute('aria-expanded') === 'true' || false;
+                    mobileMenuButton.setAttribute('aria-expanded', String(!expanded));
+                    mobileMenu.classList.toggle('hidden');
+                    openIcon.classList.toggle('block'); // Ini harusnya tetap, tapi CSS Tailwind mungkin meng-override display
+                    openIcon.classList.toggle('hidden');
+                    closeIcon.classList.toggle('block');
+                    closeIcon.classList.toggle('hidden');
+                });
+            }
+
+            const currentYearSpan = document.getElementById('currentYear');
+            if (currentYearSpan) {
+                currentYearSpan.textContent = new Date().getFullYear();
+            }
+
+            let initialTargetId = window.location.hash.substring(1);
+            let initialTitle = "Beranda";
+
+            if (initialTargetId) {
+                const initialLink = document.querySelector(`a[data-target="${initialTargetId}"]`);
+                if (initialLink) {
+                    initialTitle = initialLink.dataset.title || initialLink.textContent.trim();
+                } else { 
+                    initialTargetId = "beranda";
+                    initialTitle = "Beranda";
+                    window.location.hash = "beranda"; 
+                }
+            } else {
+                initialTargetId = "beranda"; 
+                window.location.hash = "beranda"; 
+            }
+            showPage(initialTargetId, initialTitle);
+
+
+            // --- Integrasi Gemini API ---
+            const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=`; // API Key akan ditambahkan oleh environment, biarkan kosong di sini
+            
+            async function callGeminiAPI(prompt) {
+                const payload = {
+                    contents: [{ role: "user", parts: [{ text: prompt }] }]
+                };
+                try {
+                    const response = await fetch(GEMINI_API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) {
+                        const errorBody = await response.json();
+                        console.error("Gemini API Error:", errorBody);
+                        throw new Error(`API Error (${response.status}): ${errorBody?.error?.message || 'Gagal mengambil data dari Gemini API'}`);
+                    }
+                    const result = await response.json();
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        return result.candidates[0].content.parts[0].text;
+                    } else {
+                        console.error("Struktur respons Gemini API tidak terduga:", result);
+                        throw new Error("Gagal memproses respons dari Gemini API.");
+                    }
+                } catch (error) {
+                    console.error("Kesalahan saat memanggil Gemini API:", error);
+                    return `Terjadi kesalahan: ${error.message}. Silakan coba lagi nanti.`;
+                }
+            }
+
+            // Fitur 1: Diagnosa Kerusakan HP
+            const hpProblemDescription = document.getElementById('hpProblemDescription');
+            const diagnoseHpButton = document.getElementById('diagnoseHpButton');
+            const diagnoseHpLoading = document.getElementById('diagnoseHpLoading');
+            const hpDiagnosisResult = document.getElementById('hpDiagnosisResult');
+
+            if (diagnoseHpButton && hpProblemDescription && hpDiagnosisResult && diagnoseHpLoading) {
+                diagnoseHpButton.addEventListener('click', async () => {
+                    const problem = hpProblemDescription.value.trim();
+                    if (!problem) {
+                        hpDiagnosisResult.textContent = "Mohon deskripsikan masalah HP Anda terlebih dahulu.";
+                        hpDiagnosisResult.classList.remove('hidden');
+                        hpDiagnosisResult.classList.add('text-red-500');
+                        return;
+                    }
+
+                    diagnoseHpLoading.classList.remove('hidden');
+                    diagnoseHpButton.disabled = true;
+                    hpDiagnosisResult.classList.add('hidden');
+                    hpDiagnosisResult.classList.remove('text-red-500');
+
+
+                    const prompt = `Saya memiliki masalah dengan HP saya. Deskripsinya adalah: "${problem}". Berikan saya diagnosa awal yang mungkin terjadi, beberapa kemungkinan penyebab, dan beberapa saran umum yang bisa saya coba sebelum membawanya ke teknisi. Sampaikan dalam format poin-poin yang mudah dibaca. Ingat, ini hanya diagnosa awal, bukan pengganti saran profesional.`;
+                    
+                    try {
+                        const diagnosis = await callGeminiAPI(prompt);
+                        hpDiagnosisResult.textContent = diagnosis;
+                    } catch (error) {
+                        hpDiagnosisResult.textContent = `Terjadi kesalahan saat mendapatkan diagnosa: ${error.message}`;
+                        hpDiagnosisResult.classList.add('text-red-500');
+                    } finally {
+                        hpDiagnosisResult.classList.remove('hidden');
+                        diagnoseHpLoading.classList.add('hidden');
+                        diagnoseHpButton.disabled = false;
+                    }
+                });
+            }
+
+            // Fitur 2: Generate Deskripsi Jual HP
+            const merekHpJualInput = document.getElementById('merek-hp-jual');
+            const kondisiHpJualInput = document.getElementById('kondisi-hp-jual');
+            const generateHpDescriptionButton = document.getElementById('generateHpDescriptionButton');
+            const generateHpDescriptionLoading = document.getElementById('generateHpDescriptionLoading');
+            const deskripsiJualGeneratedTextarea = document.getElementById('deskripsi-jual-generated');
+            const generateHpDescriptionError = document.getElementById('generateHpDescriptionError');
+
+            if (generateHpDescriptionButton && merekHpJualInput && kondisiHpJualInput && deskripsiJualGeneratedTextarea && generateHpDescriptionLoading && generateHpDescriptionError) {
+                generateHpDescriptionButton.addEventListener('click', async () => {
+                    const merekModel = merekHpJualInput.value.trim();
+                    const kondisi = kondisiHpJualInput.value.trim();
+
+                    if (!merekModel || !kondisi) {
+                        generateHpDescriptionError.textContent = "Mohon isi Merek & Model serta Kondisi HP terlebih dahulu.";
+                        generateHpDescriptionError.classList.remove('hidden');
+                        return;
+                    }
+
+                    generateHpDescriptionLoading.classList.remove('hidden');
+                    generateHpDescriptionButton.disabled = true;
+                    generateHpDescriptionError.classList.add('hidden');
+                    deskripsiJualGeneratedTextarea.value = "Sedang membuat deskripsi...";
+
+                    const prompt = `Buatkan draf deskripsi penjualan yang menarik untuk HP bekas dengan detail berikut:\n- Merek & Model: ${merekModel}\n- Kondisi: ${kondisi}\n\nDeskripsi harus menonjolkan kelebihan (jika ada berdasarkan kondisi) dan jujur mengenai kekurangan (jika disebutkan dalam kondisi). Buat dalam 2-3 paragraf singkat. Sertakan juga ajakan untuk menghubungi.`;
+
+                    try {
+                        const generatedDescription = await callGeminiAPI(prompt);
+                        deskripsiJualGeneratedTextarea.value = generatedDescription;
+                    } catch (error) {
+                        deskripsiJualGeneratedTextarea.value = "";
+                        generateHpDescriptionError.textContent = `Gagal membuat deskripsi: ${error.message}`;
+                        generateHpDescriptionError.classList.remove('hidden');
+                    } finally {
+                        generateHpDescriptionLoading.classList.add('hidden');
+                        generateHpDescriptionButton.disabled = false;
+                    }
+                });
+            }
+
+
+            // Placeholder untuk fungsionalitas form submit (non-Gemini)
+            const kontakForm = document.getElementById('kontakForm');
+            if (kontakForm) {
+                kontakForm.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    alert('Terima kasih! Pesan Anda akan segera kami proses (simulasi).');
+                    kontakForm.reset();
+                });
+            }
+
+            const jualHpForm = document.getElementById('jualHpForm'); // ID form sudah ada
+            if (jualHpForm) {
+                jualHpForm.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    // Ambil data dari form, termasuk deskripsi yang mungkin sudah digenerate AI
+                    const namaPenjual = document.getElementById('nama-penjual').value;
+                    const merekHp = document.getElementById('merek-hp-jual').value;
+                    const kondisiHp = document.getElementById('kondisi-hp-jual').value;
+                    const deskripsiGenerated = document.getElementById('deskripsi-jual-generated').value;
+                    const noWa = document.getElementById('no-wa-jual').value;
+
+                    // Kirim data ini ke backend Anda atau layanan form
+                    console.log("Data Form Jual HP:", { namaPenjual, merekHp, kondisiHp, deskripsiGenerated, noWa });
+                    alert('Terima kasih! Pengajuan jual HP Anda telah diterima (simulasi).\nDeskripsi yang dikirim: ' + deskripsiGenerated);
+                    jualHpForm.reset();
+                    document.getElementById('deskripsi-jual-generated').value = ''; // Kosongkan textarea AI juga
+                });
+            }
+        });
+    </script>
+</body>
+</html>
