@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beranda - MUMU SERVICE</title>
+    <!-- Impor Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Impor Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+            background-color: #f8fafc; /* bg-slate-50 */
+            color: #334155; /* text-slate-700 */
+        }
+        .page-section {
+            display: none; /* Semua section disembunyikan secara default oleh JS nanti */
+        }
+        .page-section.active {
+            display: block; /* Section aktif akan ditampilkan */
+        }
+        .hero-section {
+            background: #0f172a; /* bg-slate-900 */
+            background-image:
+                radial-gradient(at 27% 37%, hsla(215, 98%, 61%, 0.1) 0px, transparent 50%),
+                radial-gradient(at 97% 21%, hsla(199, 98%, 72%, 0.1) 0px, transparent 50%),
+                radial-gradient(at 82% 99%, hsla(240, 98%, 72%, 0.1) 0px, transparent 50%);
+        }
+        .card-hover {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        /* Styling untuk link navigasi aktif */
+        .nav-link.active, .mobile-nav-link.active {
+            background-color: #334155; /* bg-slate-700 */
+            color: #ffffff; /* text-white */
+        }
+        
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border-left-color: #ffffff;
+            animation: spin 1s ease infinite;
+            display: inline-block;
+        }
+        .loading-spinner-dark {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #7c3aed; /* violet-600 */
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            animation: spin 1s ease infinite;
+            display: inline-block;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .gemini-response-box {
+            border: 1px solid #e2e8f0; /* slate-200 */
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0.5rem;
+            background-color: #f1f5f9; /* slate-100 */
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            line-height: 1.6;
+            color: #475569; /* slate-600 */
+        }
+        .gradient-button {
+             @apply bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600 text-white font-bold py-3 px-8 rounded-lg text-lg transition-all duration-300 shadow-lg hover:shadow-xl;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <!-- Header / Navbar -->
+    <nav class="bg-slate-900 sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="#beranda" data-target="beranda" class="nav-link-header flex-shrink-0 text-white text-xl font-bold tracking-wider">
+                        MUMU<span class="text-violet-400">SERVICE</span>
+                    </a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-2">
+                        <a href="#beranda" data-target="beranda" data-title="Beranda" class="nav-link nav-link-default active">Beranda</a>
+                        <a href="#servis-hp" data-target="servis-hp" data-title="Servis HP" class="nav-link nav-link-default">Servis HP</a>
+                        <a href="#jual-beli-hp" data-target="jual-beli-hp" data-title="Jual Beli HP" class="nav-link nav-link-default">Jual Beli HP</a>
+                        <a href="#servis-cctv" data-target="servis-cctv" data-title="Servis CCTV" class="nav-link nav-link-default">Servis CCTV</a>
+                        <a href="#tentang-kami" data-target="tentang-kami" data-title="Tentang Kami" class="nav-link nav-link-default">Tentang Kami</a>
+                        <a href="#kontak" data-target="kontak" data-title="Kontak" class="nav-link nav-link-default">Kontak</a>
+                    </div>
+                </div>
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" id="mobile-menu-open-button" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Buka menu utama</span>
+                        <svg class="block h-6 w-6" id="menu-open-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <svg class="hidden h-6 w-6" id="menu-close-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#beranda" data-target="beranda" data-title="Beranda" class="mobile-nav-link mobile-nav-link-default active">Beranda</a>
+                <a href="#servis-hp" data-target="servis-hp" data-title="Servis HP" class="mobile-nav-link mobile-nav-link-default">Servis HP</a>
+                <a href="#jual-beli-hp" data-target="jual-beli-hp" data-title="Jual Beli HP" class="mobile-nav-link mobile-nav-link-default">Jual Beli HP</a>
+                <a href="#servis-cctv" data-target="servis-cctv" data-title="Servis CCTV" class="mobile-nav-link mobile-nav-link-default">Servis CCTV</a>
+                <a href="#tentang-kami" data-target="tentang-kami" data-title="Tentang Kami" class="mobile-nav-link mobile-nav-link-default">Tentang Kami</a>
+                <a href="#kontak" data-target="kontak" data-title="Kontak" class="mobile-nav-link mobile-nav-link-default">Kontak</a>
+            </div>
+        </div>
+    </nav>
+
+    <main id="page-content-wrapper">
+
+        <!-- Konten Halaman Beranda -->
+        <section id="beranda-content" class="page-section active">
+            <div class="hero-section text-white relative">
+                <div class="container mx-auto px-6 text-center py-24 md:py-40">
+                    <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">Solusi Digital Futuristik Anda</h1>
+                    <p class="text-lg md:text-xl text-slate-300 max-w-3xl mx-auto mb-8">Servis HP Profesional, Jual Beli Terpercaya, dan Instalasi CCTV Handal. Didukung oleh teknologi AI terkini.</p>
+                    <a href="#kontak" data-target="kontak" data-title="Kontak" class="nav-link-cta gradient-button">Hubungi Kami Sekarang</a>
+                </div>
+            </div>
+            <div class="py-20 bg-white">
+                <div class="container mx-auto px-6">
+                    <h2 class="text-3xl font-bold text-center mb-12 text-slate-800">Layanan Unggulan Kami</h2>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="card-hover bg-slate-50 p-8 rounded-xl text-center border border-slate-200">
+                            <div class="mx-auto mb-6 h-20 w-20 rounded-full bg-violet-100 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                            </div>
+                            <h3 class="text-2xl font-semibold mb-4 text-violet-600">Servis HP Profesional</h3>
+                            <p class="text-slate-600 mb-6">Perbaikan cepat dan bergaransi, didukung diagnosa awal berbasis AI untuk transparansi.</p>
+                            <a href="#servis-hp" data-target="servis-hp" data-title="Servis HP" class="nav-link-cta text-violet-500 hover:text-violet-700 font-semibold">Pelajari Lebih Lanjut →</a>
+                        </div>
+                        <div class="card-hover bg-slate-50 p-8 rounded-xl text-center border border-slate-200">
+                             <div class="mx-auto mb-6 h-20 w-20 rounded-full bg-teal-100 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h.01M12 7h.01M16 7h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </div>
+                            <h3 class="text-2xl font-semibold mb-4 text-teal-600">Jual Beli HP Terpercaya</h3>
+                            <p class="text-slate-600 mb-6">Temukan HP berkualitas atau jual HP Anda dengan deskripsi menarik yang dibuat otomatis oleh AI.</p>
+                            <a href="#jual-beli-hp" data-target="jual-beli-hp" data-title="Jual Beli HP" class="nav-link-cta text-teal-500 hover:text-teal-700 font-semibold">Lihat Pilihan HP →</a>
+                        </div>
+                        <div class="card-hover bg-slate-50 p-8 rounded-xl text-center border border-slate-200">
+                            <div class="mx-auto mb-6 h-20 w-20 rounded-full bg-pink-100 flex items-center justify-center">
+                               <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                            </div>
+                            <h3 class="text-2xl font-semibold mb-4 text-pink-600">Instalasi & Servis CCTV</h3>
+                            <p class="text-slate-600 mb-6">Pemasangan dan perbaikan sistem CCTV untuk keamanan rumah dan bisnis Anda.</p>
+                            <a href="#servis-cctv" data-target="servis-cctv" data-title="Servis CCTV" class="nav-link-cta text-pink-500 hover:text-pink-700 font-semibold">Detail Layanan CCTV →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <section class="py-20">
+                <div class="container mx-auto px-6 text-center">
+                    <h2 class="text-3xl font-bold mb-10 text-slate-800">Apa Kata Pelanggan Kami</h2>
+                    <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                        <div class="bg-white p-8 rounded-xl shadow-lg border border-slate-200">
+                            <p class="text-slate-600 italic mb-4">"Diagnosa awal AI-nya keren! Jadi punya gambaran sebelum ke toko. Servisnya juga cepat dan profesional. Recommended!"</p>
+                            <p class="font-semibold text-violet-600">- Budi Santoso</p>
+                        </div>
+                        <div class="bg-white p-8 rounded-xl shadow-lg border border-slate-200">
+                            <p class="text-slate-600 italic mb-4">"Fitur buat deskripsi otomatis sangat membantu pas jual HP lama. Nggak perlu pusing mikirin kata-kata lagi. Prosesnya jadi cepat."</p>
+                            <p class="font-semibold text-teal-600">- Siti Aminah</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <!-- Halaman lainnya disembunyikan dan akan ditampilkan oleh JS -->
+        <!-- Konten Halaman Servis HP -->
+        <section id="servis-hp-content" class="page-section">
+            <div class="bg-white pt-16 pb-10">
+                <div class="container mx-auto px-6 max-w-3xl text-center">
+                     <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">Servis HP Profesional</h1>
+                     <p class="mt-4 text-lg text-slate-600">Solusi cepat dan terpercaya untuk semua masalah HP Anda, didukung teknologi modern.</p>
+                </div>
+            </div>
+            
+            <!-- Fitur Diagnosa Awal Gemini API -->
+            <div class="py-20 bg-slate-100">
+                <div class="container mx-auto px-6">
+                    <div class="max-w-xl mx-auto text-center">
+                        <h2 class="text-3xl font-bold text-violet-700">✨ Cek Kerusakan Awal dengan AI</h2>
+                        <p class="text-slate-600 mt-3 mb-6">Jelaskan masalah HP Anda, dan biarkan AI kami memberikan perkiraan diagnosa awal dan saran umum secara instan.</p>
+                    </div>
+                    <div class="max-w-xl mx-auto bg-white p-8 rounded-xl shadow-lg border border-slate-200">
+                        <label for="hpProblemDescription" class="font-semibold text-slate-700">Deskripsikan Masalah HP Anda</label>
+                        <textarea id="hpProblemDescription" rows="4" class="mt-2 w-full p-3 border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-violet-500 focus:border-violet-500" placeholder="Contoh: iPhone 11 saya layarnya tidak merespon setelah jatuh, tapi notifikasi masih masuk."></textarea>
+                        <button id="diagnoseHpButton" class="mt-4 w-full gradient-button flex items-center justify-center">
+                            Dapatkan Diagnosa Awal
+                            <span id="diagnoseHpLoading" class="hidden ml-3 loading-spinner"></span>
+                        </button>
+                        <div id="hpDiagnosisResult" class="gemini-response-box mt-6 hidden"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="py-20 bg-white">
+                <div class="container mx-auto px-6">
+                    <h2 class="text-3xl font-bold text-center mb-12 text-slate-800">Jenis Kerusakan yang Kami Tangani</h2>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                         <div class="bg-slate-50 p-6 rounded-lg"><h3 class="text-xl font-semibold mb-2 text-red-600">Layar Pecah / LCD Rusak</h3><p class="text-slate-600">Penggantian layar LCD dan touchscreen.</p></div>
+                         <div class="bg-slate-50 p-6 rounded-lg"><h3 class="text-xl font-semibold mb-2 text-orange-600">Masalah Baterai</h3><p class="text-slate-600">Ganti baterai boros, kembung, atau tidak mengisi daya.</p></div>
+                         <div class="bg-slate-50 p-6 rounded-lg"><h3 class="text-xl font-semibold mb-2 text-emerald-600">Kerusakan Software</h3><p class="text-slate-600">Bootloop, hang logo, lupa pola/password, flashing ROM.</p></div>
+                         <div class="bg-slate-50 p-6 rounded-lg"><h3 class="text-xl font-semibold mb-2 text-indigo-600">Mati Total (Matot)</h3><p class="text-slate-600">Analisa dan perbaikan kerusakan hardware.</p></div>
+                         <div class="bg-slate-50 p-6 rounded-lg"><h3 class="text-xl font-semibold mb-2 text-violet-600">Speaker / Mic Rusak</h3><p class="text-slate-600">Perbaikan atau penggantian komponen audio.</p></div>
+                         <div class="bg-slate-50 p-6 rounded-lg"><h3 class="text-xl font-semibold mb-2 text-pink-600">Kamera Bermasalah</h3><p class="text-slate-600">Perbaikan kamera buram, error, atau tidak berfungsi.</p></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Konten Halaman Jual Beli HP -->
+        <section id="jual-beli-hp-content" class="page-section">
+            <div class="bg-white pt-16 pb-10">
+                <div class="container mx-auto px-6 max-w-3xl text-center">
+                     <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">Jual Beli HP Baru & Bekas</h1>
+                     <p class="mt-4 text-lg text-slate-600">Temukan HP impian Anda atau jual HP lama Anda dengan proses yang mudah dan harga terbaik.</p>
+                </div>
+            </div>
+
+            <div class="py-20 bg-slate-50">
+                <div class="container mx-auto px-6">
+                    <h2 class="text-3xl font-bold text-center mb-12 text-slate-800">Stok HP Pilihan</h2>
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="card-hover bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200">
+                            <img src="https://placehold.co/400x300/c4b5fd/1e1b4b?text=HP+Baru" alt="HP Baru" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/400x300/cccccc/ffffff?text=Error'">
+                            <div class="p-5">
+                                <span class="text-xs font-semibold uppercase text-violet-600 bg-violet-100 py-1 px-2 rounded-md">Baru</span>
+                                <h3 class="text-xl font-bold mt-3 mb-1 text-slate-800">HP Model X</h3>
+                                <p class="text-slate-600 mb-3 text-sm">RAM 8GB, 128GB</p>
+                                <p class="text-xl font-semibold text-violet-600 mb-4">Rp 5.000.000</p>
+                                <button class="w-full bg-violet-500 hover:bg-violet-600 text-white py-2 px-4 rounded-lg transition duration-300">Lihat Detail</button>
+                            </div>
+                        </div>
+                        <div class="card-hover bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200">
+                            <img src="https://placehold.co/400x300/a5f3fc/0c4a6e?text=HP+Bekas" alt="HP Bekas" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/400x300/cccccc/ffffff?text=Error'">
+                            <div class="p-5">
+                                <span class="text-xs font-semibold uppercase text-teal-600 bg-teal-100 py-1 px-2 rounded-md">Bekas</span>
+                                <h3 class="text-xl font-bold mt-3 mb-1 text-slate-800">HP Model Y</h3>
+                                <p class="text-slate-600 mb-3 text-sm">RAM 6GB, 64GB, 90%</p>
+                                <p class="text-xl font-semibold text-teal-600 mb-4">Rp 2.500.000</p>
+                                <button class="w-full bg-teal-500 hover:bg-teal-600 text-white py-2 px-4 rounded-lg transition duration-300">Lihat Detail</button>
+                            </div>
+                        </div>
+                        <div class="card-hover bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200">
+                            <img src="https://placehold.co/400x300/f9a8d4/831843?text=HP+Flagship" alt="HP Flagship" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/400x300/cccccc/ffffff?text=Error'">
+                            <div class="p-5">
+                                <span class="text-xs font-semibold uppercase text-violet-600 bg-violet-100 py-1 px-2 rounded-md">Baru</span>
+                                <h3 class="text-xl font-bold mt-3 mb-1 text-slate-800">HP Model Z Pro</h3>
+                                <p class="text-slate-600 mb-3 text-sm">RAM 12GB, 256GB</p>
+                                <p class="text-xl font-semibold text-violet-600 mb-4">Rp 10.000.000</p>
+                                <button class="w-full bg-violet-500 hover:bg-violet-600 text-white py-2 px-4 rounded-lg transition duration-300">Lihat Detail</button>
+                            </div>
+                        </div>
+                         <div class="card-hover bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200">
+                            <img src="https://placehold.co/400x300/a5f3fc/0c4a6e?text=HP+Murah" alt="HP Murah" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/400x300/cccccc/ffffff?text=Error'">
+                            <div class="p-5">
+                                <span class="text-xs font-semibold uppercase text-teal-600 bg-teal-100 py-1 px-2 rounded-md">Bekas</span>
+                                <h3 class="text-xl font-bold mt-3 mb-1 text-slate-800">HP Model A</h3>
+                                <p class="text-slate-600 mb-3 text-sm">RAM 4GB, 128GB, Mulus</p>
+                                <p class="text-xl font-semibold text-teal-600 mb-4">Rp 1.800.000</p>
+                                <button class="w-full bg-teal-500 hover:bg-teal-600 text-white py-2 px-4 rounded-lg transition duration-300">Lihat Detail</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="py-20 bg-white">
+                <div class="container mx-auto px-6">
+                    <div class="bg-slate-50 border border-slate-200 p-8 md:p-12 rounded-xl shadow-lg">
+                        <div class="max-w-xl mx-auto text-center">
+                           <h2 class="text-3xl font-bold text-teal-700">Punya HP Bekas? Jual di Sini!</h2>
+                           <p class="text-slate-600 mt-3 mb-8">Dapatkan penawaran terbaik untuk HP lama Anda. Gunakan AI untuk membuat deskripsi penjualan yang memukau dalam sekejap.</p>
+                        </div>
+                        <form id="jualHpForm" class="max-w-xl mx-auto">
+                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                 <div>
+                                    <label for="nama-penjual" class="block text-sm font-semibold text-slate-700 mb-1">Nama Anda</label>
+                                    <input type="text" id="nama-penjual" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500">
+                                 </div>
+                                 <div>
+                                    <label for="merek-hp-jual" class="block text-sm font-semibold text-slate-700 mb-1">Merek & Model HP</label>
+                                    <input type="text" id="merek-hp-jual" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500" placeholder="Contoh: Samsung S21 FE">
+                                 </div>
+                             </div>
+                            <div class="mb-4">
+                                <label for="kondisi-hp-jual" class="block text-sm font-semibold text-slate-700 mb-1">Poin-poin Kondisi HP</label>
+                                <textarea id="kondisi-hp-jual" rows="3" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500" placeholder="Contoh: Fisik 95% mulus, baterai masih awet, layar normal, fullset (box, charger)"></textarea>
+                            </div>
+                            <div class="mb-4">
+                                <button type="button" id="generateHpDescriptionButton" class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2.5 px-4 rounded-lg text-base transition duration-300 flex items-center justify-center shadow-md">
+                                    ✨ Buat Deskripsi Otomatis dengan AI
+                                    <span id="generateHpDescriptionLoading" class="hidden ml-3 loading-spinner-dark"></span>
+                                </button>
+                            </div>
+                            <div class="mb-4">
+                                <label for="deskripsi-jual-generated" class="block text-sm font-semibold text-slate-700 mb-1">Deskripsi Penjualan (Edit jika perlu)</label>
+                                <textarea id="deskripsi-jual-generated" rows="5" class="w-full p-3 border border-slate-300 rounded-lg bg-slate-100 focus:bg-white focus:ring-2 focus:ring-teal-500" placeholder="Deskripsi penjualan akan muncul di sini..."></textarea>
+                                <div id="generateHpDescriptionError" class="text-red-500 text-sm mt-1 hidden"></div>
+                            </div>
+                            <div class="mb-6">
+                                <label for="no-wa-jual" class="block text-sm font-semibold text-slate-700 mb-1">Nomor WhatsApp Aktif</label>
+                                <input type="tel" id="no-wa-jual" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500" placeholder="08...">
+                            </div>
+                            <button type="submit" class="w-full gradient-button">Ajukan Penawaran</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Halaman lain akan menyusul dengan struktur yang sama -->
+        
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-300 py-12">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <h5 class="text-xl font-bold mb-4 text-white">MUMU<span class="text-violet-400">SERVICE</span></h5>
+                    <p class="text-sm mb-4 text-slate-400">Solusi terpadu untuk servis HP, jual beli HP, dan instalasi CCTV.</p>
+                </div>
+                <div>
+                    <h5 class="text-lg font-semibold mb-4 text-white">Navigasi</h5>
+                    <ul class="space-y-2">
+                        <li><a href="#beranda" data-target="beranda" data-title="Beranda" class="nav-link-footer hover:text-violet-400">Beranda</a></li>
+                        <li><a href="#servis-hp" data-target="servis-hp" data-title="Servis HP" class="nav-link-footer hover:text-violet-400">Servis HP</a></li>
+                        <li><a href="#jual-beli-hp" data-target="jual-beli-hp" data-title="Jual Beli HP" class="nav-link-footer hover:text-violet-400">Jual Beli HP</a></li>
+                        <li><a href="#servis-cctv" data-target="servis-cctv" data-title="Servis CCTV" class="nav-link-footer hover:text-violet-400">Servis CCTV</a></li>
+                        <li><a href="#tentang-kami" data-target="tentang-kami" data-title="Tentang Kami" class="nav-link-footer hover:text-violet-400">Tentang Kami</a></li>
+                        <li><a href="#kontak" data-target="kontak" data-title="Kontak" class="nav-link-footer hover:text-violet-400">Kontak</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="text-lg font-semibold mb-4 text-white">Hubungi Kami</h5>
+                    <p class="mb-2 text-slate-400">Jl. Contoh Alamat No. 123 (Ganti)</p>
+                    <p class="mb-2 text-slate-400">Email: mumu.service@example.com (Ganti)</p>
+                    <p class="mb-2 text-slate-400">Telepon/WA: <a href="https://wa.me/6285705014175" target="_blank" class="hover:text-violet-400">+62 857-0501-4175</a></p>
+                </div>
+            </div>
+            <div class="mt-8 border-t border-slate-700 pt-8 text-center text-sm text-slate-500">
+                <p>© <span id="currentYear"></span> MUMU SERVICE. Semua Hak Dilindungi.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Catatan: Semua halaman lain seperti CCTV, Tentang, Kontak dihilangkan untuk keringkasan
+        // Namun logika JS di bawah ini akan tetap berfungsi jika Anda menambahkan kembali section tersebut
+        // dengan ID yang sesuai (misal: "servis-cctv-content").
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileMenuButton = document.getElementById('mobile-menu-open-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const openIcon = document.getElementById('menu-open-icon');
+            const closeIcon = document.getElementById('menu-close-icon');
+
+            const pageContentWrapper = document.getElementById('page-content-wrapper');
+            const pageSections = pageContentWrapper.querySelectorAll('.page-section');
+            
+            const navLinks = document.querySelectorAll('nav .hidden.md\\:block a.nav-link');
+            const mobileNavLinks = document.querySelectorAll('#mobile-menu a.mobile-nav-link');
+            const allNavLinkElements = Array.from(navLinks).concat(Array.from(mobileNavLinks)).concat(Array.from(document.querySelectorAll('.nav-link-cta, .nav-link-footer, .nav-link-header')));
+
+            function applyClasses(element, classes) {
+                element.classList.add(...classes);
+            }
+
+            function removeClasses(element, classes) {
+                element.classList.remove(...classes);
+            }
+
+            const navLinkDefaultClasses = ['px-3', 'py-2', 'rounded-md', 'text-sm', 'font-medium', 'text-slate-300', 'hover:bg-slate-700', 'hover:text-white', 'transition-colors', 'duration-200'];
+            const mobileNavLinkDefaultClasses = ['block', 'px-3', 'py-2', 'rounded-md', 'text-base', 'font-medium', 'text-slate-300', 'hover:bg-slate-700', 'hover:text-white'];
+            const navLinkActiveClasses = ['active', 'bg-slate-700', 'text-white'];
+
+            function updateNavStyles(link, isActive, isMobile) {
+                const defaultClasses = isMobile ? mobileNavLinkDefaultClasses : navLinkDefaultClasses;
+                removeClasses(link, [...defaultClasses, ...navLinkActiveClasses]);
+                if (isActive) {
+                    applyClasses(link, [...defaultClasses.filter(c => !c.startsWith('hover:')), ...navLinkActiveClasses]);
+                } else {
+                    applyClasses(link, defaultClasses);
+                }
+            }
+
+            function showPage(targetId, targetTitle) {
+                pageSections.forEach(section => {
+                    section.classList.remove('active');
+                    section.classList.add('hidden'); 
+                });
+                const activeSection = document.getElementById(targetId + '-content');
+                if (activeSection) {
+                    activeSection.classList.add('active');
+                    activeSection.classList.remove('hidden');
+                    document.title = targetTitle + " - MUMU SERVICE";
+                     window.scrollTo(0, 0); 
+                }
+                updateActiveNavLinks(targetId);
+            }
+            
+            function updateActiveNavLinks(activeTargetId) {
+                navLinks.forEach(link => updateNavStyles(link, link.dataset.target === activeTargetId, false));
+                mobileNavLinks.forEach(link => updateNavStyles(link, link.dataset.target === activeTargetId, true));
+            }
+
+            allNavLinkElements.forEach(link => {
+                if (link.classList.contains('nav-link-default')) applyClasses(link, navLinkDefaultClasses);
+                if (link.classList.contains('mobile-nav-link-default')) applyClasses(link, mobileNavLinkDefaultClasses);
+                
+                link.addEventListener('click', (event) => {
+                    const targetId = link.dataset.target;
+                    const targetTitle = link.dataset.title || link.textContent.trim(); 
+                    if (targetId) { 
+                        event.preventDefault(); 
+                        showPage(targetId, targetTitle);
+                        window.location.hash = targetId;
+                        if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                            mobileMenu.classList.add('hidden');
+                            mobileMenuButton.setAttribute('aria-expanded', 'false');
+                            openIcon.classList.remove('hidden');
+                            closeIcon.classList.add('hidden');
+                        }
+                    }
+                });
+            });
+            
+            if (mobileMenuButton) {
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                    const isExpanded = !mobileMenu.classList.contains('hidden');
+                    mobileMenuButton.setAttribute('aria-expanded', String(isExpanded));
+                    openIcon.classList.toggle('hidden', isExpanded);
+                    closeIcon.classList.toggle('hidden', !isExpanded);
+                });
+            }
+
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+            // Handle initial page load
+            let initialTargetId = window.location.hash.substring(1) || "beranda";
+            const initialLink = document.querySelector(`a[data-target="${initialTargetId}"]`);
+            if (!initialLink) initialTargetId = "beranda";
+            const initialTitle = initialLink ? (initialLink.dataset.title || "Beranda") : "Beranda";
+            if(window.location.hash !== "#" + initialTargetId) window.location.hash = initialTargetId;
+            showPage(initialTargetId, initialTitle);
+
+            // --- Gemini API Integration ---
+            const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=`;
+            
+            async function callGeminiAPI(prompt, button, loadingSpinner) {
+                button.disabled = true;
+                loadingSpinner.classList.remove('hidden');
+
+                const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+                try {
+                    const response = await fetch(GEMINI_API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) {
+                        const errorBody = await response.json();
+                        throw new Error(`API Error (${response.status}): ${errorBody?.error?.message || 'Gagal mengambil data'}`);
+                    }
+                    const result = await response.json();
+                    if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
+                        return result.candidates[0].content.parts[0].text;
+                    } else {
+                        throw new Error("Struktur respons API tidak terduga.");
+                    }
+                } catch (error) {
+                    console.error("Kesalahan saat memanggil Gemini API:", error);
+                    return `Terjadi kesalahan: ${error.message}. Silakan coba lagi.`;
+                } finally {
+                    button.disabled = false;
+                    loadingSpinner.classList.add('hidden');
+                }
+            }
+
+            // Fitur 1: Diagnosa Kerusakan HP
+            const diagnoseHpButton = document.getElementById('diagnoseHpButton');
+            if(diagnoseHpButton) {
+                diagnoseHpButton.addEventListener('click', async () => {
+                    const hpProblemDescription = document.getElementById('hpProblemDescription');
+                    const hpDiagnosisResult = document.getElementById('hpDiagnosisResult');
+                    const diagnoseHpLoading = document.getElementById('diagnoseHpLoading');
+                    const problem = hpProblemDescription.value.trim();
+                    if (!problem) {
+                        hpDiagnosisResult.textContent = "Mohon deskripsikan masalah HP Anda.";
+                        hpDiagnosisResult.classList.remove('hidden');
+                        return;
+                    }
+                    const prompt = `Anda adalah asisten virtual dari sebuah tempat servis HP. Berdasarkan deskripsi masalah berikut: "${problem}", berikan diagnosa awal yang mungkin terjadi, beberapa kemungkinan penyebab, dan saran umum yang bisa dicoba (seperti restart atau cek pengaturan). Sampaikan dalam format poin-poin. Akhiri dengan disclaimer bahwa ini hanya diagnosa awal dan disarankan untuk pengecekan lebih lanjut oleh teknisi profesional.`;
+                    const diagnosis = await callGeminiAPI(prompt, diagnoseHpButton, diagnoseHpLoading);
+                    hpDiagnosisResult.textContent = diagnosis;
+                    hpDiagnosisResult.classList.remove('hidden');
+                });
+            }
+
+            // Fitur 2: Generate Deskripsi Jual HP
+            const generateHpDescriptionButton = document.getElementById('generateHpDescriptionButton');
+            if (generateHpDescriptionButton) {
+                generateHpDescriptionButton.addEventListener('click', async () => {
+                    const merekHpJualInput = document.getElementById('merek-hp-jual');
+                    const kondisiHpJualInput = document.getElementById('kondisi-hp-jual');
+                    const deskripsiJualGeneratedTextarea = document.getElementById('deskripsi-jual-generated');
+                    const generateHpDescriptionError = document.getElementById('generateHpDescriptionError');
+                    const generateHpDescriptionLoading = document.getElementById('generateHpDescriptionLoading');
+                    const merekModel = merekHpJualInput.value.trim();
+                    const kondisi = kondisiHpJualInput.value.trim();
+
+                    if (!merekModel || !kondisi) {
+                        generateHpDescriptionError.textContent = "Mohon isi Merek & Model serta Kondisi HP.";
+                        generateHpDescriptionError.classList.remove('hidden');
+                        return;
+                    }
+                    generateHpDescriptionError.classList.add('hidden');
+                    deskripsiJualGeneratedTextarea.value = "Sedang membuat deskripsi...";
+
+                    const prompt = `Buatkan draf deskripsi penjualan yang menarik dan profesional untuk HP bekas. Detailnya:\n- Merek & Model: ${merekModel}\n- Poin-poin Kondisi: ${kondisi}\n\nBuat dalam 2-3 paragraf singkat. Tonjolkan kelebihan dan sebutkan kekurangan secara jujur jika ada. Akhiri dengan ajakan untuk bertanya lebih lanjut.`;
+                    
+                    const generatedDescription = await callGeminiAPI(prompt, generateHpDescriptionButton, generateHpDescriptionLoading);
+                    deskripsiJualGeneratedTextarea.value = generatedDescription;
+                    if(generatedDescription.startsWith("Terjadi kesalahan")) {
+                        generateHpDescriptionError.textContent = generatedDescription;
+                        generateHpDescriptionError.classList.remove('hidden');
+                        deskripsiJualGeneratedTextarea.value = "";
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
